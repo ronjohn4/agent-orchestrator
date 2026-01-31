@@ -1,0 +1,19 @@
+<div class="message-pair" data-message-pair>
+  <div class="msg msg-user">
+    {% if user_text %}<p class="msg-text">{{ user_text }}</p>{% endif %}
+    {% if user_image_filename %}
+    <div class="msg-img-wrap">
+      <img
+        src="{{ url_for('chat.uploads', filename=user_image_filename) }}"
+        alt="Uploaded image"
+        class="msg-img"
+        loading="lazy"
+      />
+    </div>
+    {% endif %}
+  </div>
+  <div class="msg msg-bot">
+    <!-- <span class="msg-sender">{{ chatbot_name }}</span> -->
+    <p class="msg-text">{{ bot_message }}</p>
+  </div>
+</div>
