@@ -1,6 +1,8 @@
+import threading
 import uuid
 from pathlib import Path
 from app.routes.agents import Orchestrator
+from app.routes.say import speak
 
 from flask import (
     Blueprint,
@@ -60,7 +62,7 @@ def _process_message(text: str | None, image_filename: str | None) -> str:
     if text and text.strip():
         history = _get_history()
         result = agent_orchestrator.ask(text.strip(), history=history)
-        response = result.response
+        response = result.content
         _append_to_history(text.strip(), response)
         return response
     if image_filename:
@@ -104,6 +106,9 @@ def message():
         return "Bad Request", 400
 
     reply = _process_message(text, image_filename)
+
+    if reply and (text or image_filename) and request.form.get("speak"):
+        threading.Thread(target=speak, args=(reply,), daemon=True).start()
 
     if request.headers.get("HX-Request"):
         resp = make_response(

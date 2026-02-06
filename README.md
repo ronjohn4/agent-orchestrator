@@ -1,4 +1,59 @@
-# Flask + HTMX Chatbot
+# Home Assistant/Office Chatbot
+
+This is my AI learning project.  
+
+[x] Orchestrator Agent
+[] Sub-agents
+   [] One sub-agent for each tool
+   [] sub-agent will use the pattern most effective for this tool call
+[] Tools
+   [] GetWeather
+   [] GetDateTime
+   [] web search
+[] LLM
+   [] minimize the number of different LLMs used
+   [] ideally use locally hosted LLMs
+[] RAG
+   [] Local files
+      [] persist vector db
+      [] update vector db when source files change
+   [] LangChain online documentation
+[] User feedback loop
+   [] Chat thumbs up/down
+[] Monitoring
+   [] token usage
+   [] costs
+[] logging
+   [] for debugging
+[] memory
+   [] previous conversation
+      [] determine when the topic has chamged
+      [] determine information that is relevant to the job, not the task
+      [] age out old information that is no longer relevant
+   [] context 
+      [] how to decide what is relevant for the current question and the current conversation
+[] timing
+   [] job - like being the research assistant
+   [] project - like building a specific piece of software
+   [] task - the specific work being done now
+   [] question  - this specific turn
+[] changes based on time
+   [] when does the graph change, the sub-agents that can be used
+   [] how decide what is relevant and to save for the future
+   [] how to organize the future knowledge
+[] todo queue
+   [] list of tasks that aren't important now but can be worked on in spare time
+      [] prioritizing this list
+   [] how to suspend current work and add tot he todo queue
+      [] could happen when a human in the loop question comes up and the human isn't available
+[] MCP Server
+   [] MyData integration (another side project that exposes a set ot REST APIs)
+[] speech
+   [x] toggle on/off talking
+   [x] allow spoken input
+   [] always listen then contribute when appropriate
+
+
 
 A minimal chatbot web app built with **Flask** and **HTMX**. The chatbot name is configurable, and it accepts **text** or **image** uploads (or both).
 
