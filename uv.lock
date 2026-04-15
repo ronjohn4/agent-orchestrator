@@ -31,6 +31,10 @@ dependencies = [
     { name = "numba" },
     { name = "pydantic" },
     { name = "pyttsx3" },
+<<<<<<< HEAD
+=======
+    { name = "strip-markdown" },
+>>>>>>> fdf7e3a2212363ac755e74c61f1bd39f279ff498
     { name = "unstructured" },
 ]
 
@@ -56,6 +60,10 @@ requires-dist = [
     { name = "numba", specifier = ">=0.63.1" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pyttsx3" },
+<<<<<<< HEAD
+=======
+    { name = "strip-markdown", specifier = ">=1.3" },
+>>>>>>> fdf7e3a2212363ac755e74c61f1bd39f279ff498
     { name = "unstructured", specifier = ">=0.18.31" },
 ]
 
@@ -842,6 +850,7 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "flask-restful"
 version = "0.3.10"
 source = { registry = "https://pypi.org/simple" }
@@ -857,6 +866,8 @@ wheels = [
 ]
 
 [[package]]
+=======
+>>>>>>> fdf7e3a2212363ac755e74c61f1bd39f279ff498
 name = "flatbuffers"
 version = "25.12.19"
 source = { registry = "https://pypi.org/simple" }
@@ -6513,6 +6524,22 @@ wheels = [
 ]
 
 [[package]]
+<<<<<<< HEAD
+=======
+name = "strip-markdown"
+version = "1.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "markdown" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6a/aa/857c3a339e520cc730815c1d90fac2fcc42903d338ca5d0543d02c8153f1/strip_markdown-1.3.tar.gz", hash = "sha256:ead579d7ed53935512e23187565a71b57b90b540096984f2b567829a53a3b852", size = 3334, upload-time = "2022-04-23T07:50:30.406Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/05/21/79a6c7fbe0a761dc3dffcf6349dd4699173088ece8ebc24c602ec6ddd9c0/strip_markdown-1.3-py3-none-any.whl", hash = "sha256:bfe3217310db3d2bb19e456d5d896d3d9798d70f08da9f56e75bde812d0e5507", size = 4002, upload-time = "2022-04-23T07:50:29.155Z" },
+]
+
+[[package]]
+>>>>>>> fdf7e3a2212363ac755e74c61f1bd39f279ff498
 name = "sympy"
 version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }

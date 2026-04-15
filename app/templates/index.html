@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="chat">
+  <div id="message-container" class="messages" role="log" aria-live="polite">
+    {% block messages %}{% endblock %}
+  </div>
+
+  <form
+    id="chat-form"
+    class="form"
+    action="{{ url_for('chat.message') }}"
+    method="post"
+    enctype="multipart/form-data"
+    hx-post="{{ url_for('chat.message') }}"
+    hx-target="#message-container"
+    hx-swap="beforeend"
+    hx-encoding="multipart/form-data"
+  >
+    <div class="form-row">
+      <label for="image-input" class="file-label" title="Attach image">
+        <span class="file-label-text">📎</span>
+        <input
+          type="file"
+          id="image-input"
+          name="image"
+          accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+          class="file-input"
+        />
+      </label>
+      <label for="speak-toggle" class="speak-toggle" title="Toggle spoken response">
+        <input type="checkbox" id="speak-toggle" name="speak" value="1" class="speak-checkbox" />
+        <span class="speak-icon speak-on" aria-hidden="true">🔊</span>
+        <span class="speak-icon speak-off" aria-hidden="true">🔇</span>
+      </label>
+      <input
+        type="text"
+        id="msg-input"
+        name="message"
+        class="text-input"
+        placeholder="Type a message or attach an image…"
+        autocomplete="off"
+        autofocus
+      />
+      <button type="submit" class="submit-btn" aria-label="Send">Send</button>
+    </div>
+    <div id="form-errors" class="form-errors" aria-live="polite"></div>
+  </form>
+</div>
+
+<script>
+  (function() {
+    var speakToggle = document.getElementById('speak-toggle');
+    if (speakToggle) {
+      var stored = localStorage.getItem('chat-speak-enabled');
+      speakToggle.checked = stored === null ? true : stored === 'true';
+      speakToggle.addEventListener('change', function() {
+        localStorage.setItem('chat-speak-enabled', this.checked);
+      });
+    }
+  })();
+
+  document.body.addEventListener('focus-input', function() {
+    document.getElementById('msg-input')?.focus();
+  });
+
+  (function() {
+    function escapeHtml(text) {
+      var div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    document.getElementById('chat-form').addEventListener('htmx:beforeRequest', function(evt) {
+      var form = evt.detail.formData || (evt.target && new FormData(evt.target));
+      if (!form) return;
+      var msgInput = document.getElementById('msg-input');
+      var fileInput = document.getElementById('image-input');
+      var hasText = msgInput && msgInput.value && msgInput.value.trim();
+      var hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+      if (!hasText && !hasFile) return;
+
+      var text = hasText ? msgInput.value.trim() : '';
+      var container = document.getElementById('message-container');
+      if (!container) return;
+
+      var pair = document.createElement('div');
+      pair.className = 'message-pair';
+      pair.setAttribute('data-message-pair', '');
+
+      var userMsg = document.createElement('div');
+      userMsg.className = 'msg msg-user';
+      var userContent = '';
+      if (text) userContent += '<p class="msg-text">' + escapeHtml(text) + '</p>';
+      if (hasFile) userContent += '<p class="msg-text msg-attachment">Image attached</p>';
+      userMsg.innerHTML = userContent;
+      pair.appendChild(userMsg);
+
+      var loading = document.createElement('div');
+      loading.id = 'msg-loading';
+      loading.className = 'msg msg-loading';
+      loading.setAttribute('aria-busy', 'true');
+      loading.innerHTML = '<span class="msg-loading-dots"><span></span><span></span><span></span></span><span class="msg-loading-text">Thinking…</span>';
+      pair.appendChild(loading);
+
+      container.appendChild(pair);
+      container.scrollTop = container.scrollHeight;
+
+      document.getElementById('form-errors').innerHTML = '';
+      var speakChecked = document.getElementById('speak-toggle')?.checked ?? false;
+      /* Defer reset so HTMX has already captured form data for the request */
+      setTimeout(function() {
+        evt.target.reset();
+        var t = document.getElementById('speak-toggle');
+        if (t) t.checked = speakChecked;
+      }, 0);
+    });
+
+    document.getElementById('chat-form').addEventListener('htmx:afterRequest', function(evt) {
+      if (evt.detail.successful) {
+        document.getElementById('form-errors').innerHTML = '';
+        document.getElementById('msg-input')?.focus();
+      } else {
+        var loading = document.getElementById('msg-loading');
+        if (loading) {
+          loading.outerHTML = '<div class="msg msg-bot msg-error"><p class="msg-text">Something went wrong. Please try again.</p></div>';
+        }
+      }
+    });
+  })();
+</script>
+{% endblock %}
