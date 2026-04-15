@@ -159,6 +159,59 @@ body {
   border-color: var(--text-muted);
 }
 
+.speak-toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.speak-toggle:hover {
+  background: var(--border);
+  border-color: var(--text-muted);
+}
+
+.speak-toggle:has(.speak-checkbox:checked) {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.speak-checkbox {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.speak-icon {
+  font-size: 1.1rem;
+}
+
+.speak-on {
+  display: none;
+}
+
+.speak-off {
+  display: inline;
+}
+
+.speak-toggle:has(.speak-checkbox:checked) .speak-on {
+  display: inline;
+}
+
+.speak-toggle:has(.speak-checkbox:checked) .speak-off {
+  display: none;
+}
+
 .file-input {
   position: absolute;
   width: 0;

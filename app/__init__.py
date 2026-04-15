@@ -21,8 +21,6 @@ def create_app(config_object=Config) -> Flask:
     HTMX(app)
 
     from app.routes import chat
-
     app.register_blueprint(chat.bp)
-    # app.register_blueprint(agents.bp)
 
     return app

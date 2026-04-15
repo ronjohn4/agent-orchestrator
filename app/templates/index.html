@@ -28,6 +28,11 @@
           class="file-input"
         />
       </label>
+      <label for="speak-toggle" class="speak-toggle" title="Toggle spoken response">
+        <input type="checkbox" id="speak-toggle" name="speak" value="1" class="speak-checkbox" />
+        <span class="speak-icon speak-on" aria-hidden="true">🔊</span>
+        <span class="speak-icon speak-off" aria-hidden="true">🔇</span>
+      </label>
       <input
         type="text"
         id="msg-input"
@@ -44,6 +49,17 @@
 </div>
 
 <script>
+  (function() {
+    var speakToggle = document.getElementById('speak-toggle');
+    if (speakToggle) {
+      var stored = localStorage.getItem('chat-speak-enabled');
+      speakToggle.checked = stored === null ? true : stored === 'true';
+      speakToggle.addEventListener('change', function() {
+        localStorage.setItem('chat-speak-enabled', this.checked);
+      });
+    }
+  })();
+
   document.body.addEventListener('focus-input', function() {
     document.getElementById('msg-input')?.focus();
   });
@@ -91,8 +107,13 @@
       container.scrollTop = container.scrollHeight;
 
       document.getElementById('form-errors').innerHTML = '';
+      var speakChecked = document.getElementById('speak-toggle')?.checked ?? false;
       /* Defer reset so HTMX has already captured form data for the request */
-      setTimeout(function() { evt.target.reset(); }, 0);
+      setTimeout(function() {
+        evt.target.reset();
+        var t = document.getElementById('speak-toggle');
+        if (t) t.checked = speakChecked;
+      }, 0);
     });
 
     document.getElementById('chat-form').addEventListener('htmx:afterRequest', function(evt) {

@@ -1,29 +1,18 @@
 import threading
 import uuid
 from pathlib import Path
-from app.routes.agents import Orchestrator
-from app.routes.say import speak
-
-from flask import (
-    Blueprint,
-    current_app,
-    make_response as flask_make_response,
-    render_template,
-    request,
-    send_from_directory,
-    session,
-)
+from app.utilities.say import speak
+from flask import Blueprint, current_app, make_response as flask_make_response, \
+        render_template, request, send_from_directory
 from flask_htmx import make_response
 from werkzeug.utils import secure_filename
-
 from app.config import allowed_file
+import requests
+# import markdown
+import strip_markdown
 
 bp = Blueprint("chat", __name__)
 
-agent_orchestrator = Orchestrator()
-
-# Max turns (user+assistant pairs) to keep in session
-MAX_HISTORY_TURNS = 20
 
 def _save_upload(file) -> str | None:
     """Save uploaded image; return stored filename (for URL) or None."""
@@ -41,36 +30,29 @@ def _save_upload(file) -> str | None:
     return stored
 
 
-def _get_history() -> list[tuple[str, str]]:
-    """Get conversation history from session as [(role, content), ...] for LangChain."""
-    raw = session.get("chat_history", [])
-    return [(h["role"], h["content"]) for h in raw]
-
-
-def _append_to_history(user_msg: str, assistant_msg: str) -> None:
-    """Append a turn to session history and trim if needed."""
-    history = session.get("chat_history", [])
-    history.extend([
-        {"role": "human", "content": user_msg},
-        {"role": "ai", "content": assistant_msg},
-    ])
-    session["chat_history"] = history[-(MAX_HISTORY_TURNS * 2) :]
-
-
 def _process_message(text: str | None, image_filename: str | None) -> str:
     """Process user input with conversational context."""
     if text and text.strip():
-        history = _get_history()
-        result = agent_orchestrator.ask(text.strip(), history=history)
-        response = result.content
-        _append_to_history(text.strip(), response)
-        return response
+        payload = {
+            "query": text,
+            "query-path": None,
+            "response" : None,
+            "response-path": None,  
+        }
+        answer = requests.post(f'{current_app.config["AGENT_URL"]}/agent', json=payload)
+        
+        if answer.status_code == 200:
+            # models return markdown, convert to html for display
+            return strip_markdown.strip_markdown(answer.text)
+        else:
+            return "An error occurred while processing your message."
+        
     if image_filename:
         return "Not sure what to do with an image."
     return "Send a message or an image to get a reply."
 
 
-@bp.route("/uploads/<path:filename>")
+@bp.route("/uploads/<path:filename>") 
 def uploads(filename: str):
     """Serve uploaded images."""
     folder = current_app.config["UPLOAD_FOLDER"]
@@ -108,7 +90,7 @@ def message():
     reply = _process_message(text, image_filename)
 
     if reply and (text or image_filename) and request.form.get("speak"):
-        threading.Thread(target=speak, args=(reply,), daemon=True).start()
+        threading.Thread(target=speak, args=(reply.content,), daemon=True).start()
 
     if request.headers.get("HX-Request"):
         resp = make_response(

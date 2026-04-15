@@ -13,6 +13,8 @@ class Config:
 
     # Configurable chatbot name (env: CHATBOT_NAME)
     CHATBOT_NAME = os.environ.get("CHATBOT_NAME", "Riko")
+    # MODEL = os.environ.get("MODEL", "llama3.2")
+    AGENT_URL = os.environ.get("AGENT_URL", "http://localhost:5010")
 
 
 def allowed_file(filename: str) -> bool:
