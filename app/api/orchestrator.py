@@ -22,15 +22,15 @@ class Orchestrator:
 
     def __init__(self):
         self.session = []
-        self.llm = ChatOllama(model=MODEL, temperature=0)
-        self.tool_map = {
-            "get_weather_subagent": get_weather_subagent, 
-            "get_datetime_subagent": get_datetime_subagent,
-            "get_general_knowledge": get_general_knowledge,
-        }
+        self.model = ChatOllama(model=MODEL, temperature=0)
+        # self.tool_map = {
+        #     "get_weather_subagent": get_weather_subagent, 
+        #     "get_datetime_subagent": get_datetime_subagent,
+        #     "get_general_knowledge": get_general_knowledge,
+        # }
         self.tools = [get_weather_subagent, get_datetime_subagent, get_general_knowledge]
         self.orchestrator = create_agent(
-            self.llm, 
+            self.model, 
             tools=self.tools,  
             system_prompt="You are a manager. Delegate research to the researcher tools."
         )
